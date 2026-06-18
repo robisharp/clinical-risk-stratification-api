@@ -35,14 +35,14 @@ The pipeline operates as a modular data manufacturing assembly line:
 Ensure you have Python 3.10+ installed on your system.
 
 ### 1. Clone the Repository & Install Dependencies
-```bash
+
 git clone [https://github.com/your-username/clinical-risk-stratification-api.git](https://github.com/your-username/clinical-risk-stratification-api.git)
 cd clinical-risk-stratification-api
 pip install fastapi uvicorn pydantic xgboost scikit-learn joblib pandas numpy matplotlib seaborn shap
 
 ### To Launch the asynchronous ASGI gateway interface to load the model into memory and bind the frontend template:
 
-```Bash
+
 uvicorn app:app --reload
 
 ### Access the Platform
@@ -88,3 +88,5 @@ CDSS Structured Response
 **Target Population**: Adult patient matrices tracked inside domestic outpatient hospital environments.
 
 **Limitations**: Model out-of-distribution tracking errors may amplify if passed completely unique or unseen primary billing code structures (Diagnosis_Code). Regular retraining and performance drift tracking (via tools like Evidently AI) are strongly advised.
+
+<img width="1901" height="965" alt="image" src="https://github.com/user-attachments/assets/a0e6e647-24f2-4fe2-ab53-acc3cabf4a02" />
