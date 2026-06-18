@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Decision Support Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+    <header class="bg-teal-700 text-white shadow-md py-4 px-6 mb-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🏥</span>
+                <h1 class="text-xl font-bold tracking-tight">Clinical Risk Stratification Engine</h1>
+            </div>
+            <span class="bg-teal-800 text-teal-200 text-xs px-3 py-1 rounded-full font-mono">v1.0.0 (XGBoost Live)</span>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
+        
+        <section class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center">
+                <span class="mr-2">📋</span> Patient Intake Metrics (Raw Text Fields Supported)
+            </h2>
+            
+            <form id="vitalsForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Age</label>
+                    <input type="text" name="Age" value="54" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Supports: "forty", "sixty", etc.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Gender</label>
+                    <select name="Gender" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none bg-white">
+                        <option value="Female" selected>Female</option>
+                        <option value="Male">Male</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Blood Pressure</label>
+                    <input type="text" name="Blood_Pressure" value="134/82" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Supports: "120/80", "130 over 85"</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Heart Rate (BPM)</label>
+                    <input type="text" name="Heart_Rate" value="seventy" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">BMI Value</label>
+                    <input type="text" name="BMI" value="28.4 kg/m²" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Cholesterol Level</label>
+                    <input type="text" name="Cholesterol_Level" value="high" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Supports: "normal", "high", or numeric values</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Diabetic Status</label>
+                    <input type="text" name="Diabetic" value="yes" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Smoking History</label>
+                    <input type="text" name="Smoker" value="Former" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Diagnosis Billing Code</label>
+                    <input type="text" name="Diagnosis_Code" value="I10" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Geographic City</label>
+                    <input type="text" name="City" value="Boston" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Last Clinic Visit Date</label>
+                    <input type="text" name="Last_Visit_Date" value="2024-11-13" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Scheduled Follow Up Window</label>
+                    <input type="text" name="Follow_Up" value="two weeks" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all" required>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Current Active Medications</label>
+                    <input type="text" name="Medications" value="Aspirin; Metformin; Lisinopril" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all">
+                </div>
+                
+                <div class="md:col-span-2 mt-4">
+                    <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 rounded-lg shadow transition-all flex justify-center items-center space-x-2">
+                        <span>⚡ Run Diagnostic Assessment</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="flex flex-col space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex-1 flex flex-col">
+                <h2 class="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-3 mb-6 flex items-center">
+                    <span class="mr-2">🔬</span> Model Risk Stratification
+                </h2>
+                
+                <div id="placeholderState" class="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-400">
+                    <span class="text-5xl mb-3">📡</span>
+                    <p class="text-sm font-medium">Awaiting Data Submission...</p>
+                    <p class="text-xs max-w-[200px] mt-1">Submit patient values to run Phase 6 classification loops.</p>
+                </div>
+
+                <div id="resultsState" class="hidden flex-1 flex flex-col space-y-6">
+                    <div class="text-center">
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Calculated Risk Score</p>
+                        <h3 id="riskProb" class="text-5xl font-black tracking-tight text-slate-800 my-1">0.0%</h3>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3">
+                            <div id="riskBar" class="bg-teal-500 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div id="statusBadge" class="p-4 rounded-xl text-center font-semibold border transition-all duration-300">
+                        <p id="statusText" class="text-sm">Status Profile</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-150 rounded-xl p-4 space-y-3 text-xs font-medium text-slate-600">
+                        <div class="flex justify-between">
+                            <span>Optimal Decision Boundary:</span>
+                            <span id="thresholdApplied" class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-slate-700">0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>High Risk Indicator Assigned:</span>
+                            <span id="classAssigned" class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-slate-700">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('vitalsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Gather standard form attributes into structural dictionary payload
+            const formData = new FormData(e.target);
+            const payload = Object.fromEntries(formData.entries());
+            
+            // UI elements transition configurations
+            const placeholder = document.getElementById('placeholderState');
+            const results = document.getElementById('resultsState');
+            
+            try {
+                // Send JSON payload asynchronously to FastAPI endpoint via HTTP POST
+                const response = await fetch('http://127.0.0.1:8000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('API processing loop error encountered.');
+                
+                const data = await response.json();
+                
+                // Transition views safely
+                placeholder.classList.add('hidden');
+                results.classList.remove('hidden');
+
+                // Update UI text nodes
+                const percentage = (data.disease_risk_probability * 100).toFixed(1);
+                document.getElementById('riskProb').innerText = `${percentage}%`;
+                document.getElementById('riskBar').style.width = `${percentage}%`;
+                document.getElementById('thresholdApplied').innerText = data.optimal_decision_threshold_applied;
+                document.getElementById('classAssigned').innerText = data.high_risk_classification;
+                
+                const statusBadge = document.getElementById('statusBadge');
+                const statusText = document.getElementById('statusText');
+                statusText.innerText = data.clinical_status;
+
+                // Adjust color profiles depending on model risk classification boundaries
+                if (data.high_risk_classification === 1) {
+                    statusBadge.className = "p-4 rounded-xl text-center font-bold border bg-rose-50 border-rose-200 text-rose-700 animate-pulse";
+                    document.getElementById('riskBar').className = "bg-rose-500 h-full transition-all duration-500";
+                    document.getElementById('riskProb').className = "text-5xl font-black tracking-tight text-rose-600 my-1";
+                } else {
+                    statusBadge.className = "p-4 rounded-xl text-center font-bold border bg-emerald-50 border-emerald-200 text-emerald-700";
+                    document.getElementById('riskBar').className = "bg-emerald-500 h-full transition-all duration-500";
+                    document.getElementById('riskProb').className = "text-5xl font-black tracking-tight text-slate-800 my-1";
+                }
+
+            } catch (err) {
+                alert(`Error running model calculation: ${err.message}. Ensure your app.py is actively running.`);
+            }
+        });
+    </script>
+</body>
+</html>
