@@ -136,20 +136,28 @@
 
     <script>
         document.getElementById('vitalsForm').addEventListener('submit', async (e) => {
+            // 1. Strictly stop the browser from refreshing the page and altering the URL
             e.preventDefault();
             
-            // Gather standard form attributes into structural dictionary payload
+            // 2. Gather form attributes into a structural dictionary payload
             const formData = new FormData(e.target);
             const payload = Object.fromEntries(formData.entries());
             
-            // UI elements transition configurations
+            // 3. Select UI transition elements
             const placeholder = document.getElementById('placeholderState');
             const results = document.getElementById('resultsState');
             
             try {
-                // Send JSON payload asynchronously to FastAPI endpoint via HTTP POST
-                    const response = await fetch('https://clinical-risk-stratification-api.onrender.com/predict', {
-                    method: 'POST',,
+                // Show a loading text in the placeholder while waiting for Render to wake up
+                placeholder.innerHTML = `
+                    <span class="text-5xl mb-3 animate-spin">⏳</span>
+                    <p class="text-sm font-medium text-teal-600">Contacting Render Cloud Server...</p>
+                    <p class="text-xs max-w-[200px] mt-1 text-slate-400">This can take up to 60 seconds if the free server is waking up from sleep.</p>
+                `;
+
+                // 4. Send JSON payload asynchronously to your live Render backend
+                const response = await fetch('https://clinical-risk-stratification-api.onrender.com/predict', {
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
@@ -158,11 +166,11 @@
                 
                 const data = await response.json();
                 
-                // Transition views safely
+                // 5. Transition views safely
                 placeholder.classList.add('hidden');
                 results.classList.remove('hidden');
 
-                // Update UI text nodes
+                // 6. Update UI text elements with machine learning output
                 const percentage = (data.disease_risk_probability * 100).toFixed(1);
                 document.getElementById('riskProb').innerText = `${percentage}%`;
                 document.getElementById('riskBar').style.width = `${percentage}%`;
@@ -173,7 +181,7 @@
                 const statusText = document.getElementById('statusText');
                 statusText.innerText = data.clinical_status;
 
-                // Adjust color profiles depending on model risk classification boundaries
+                // 7. Adjust dynamic color profiles based on risk classification
                 if (data.high_risk_classification === 1) {
                     statusBadge.className = "p-4 rounded-xl text-center font-bold border bg-rose-50 border-rose-200 text-rose-700 animate-pulse";
                     document.getElementById('riskBar').className = "bg-rose-500 h-full transition-all duration-500";
@@ -185,7 +193,13 @@
                 }
 
             } catch (err) {
-                alert(`Error running model calculation: ${err.message}. Ensure your app.py is actively running.`);
+                // Restore placeholder layout if a connection error happens
+                placeholder.innerHTML = `
+                    <span class="text-5xl mb-3">⚠️</span>
+                    <p class="text-sm font-medium text-rose-600">Connection Failed</p>
+                    <p class="text-xs max-w-[250px] mt-1 text-slate-400">Could not parse output. Make sure your Render server is fully active.</p>
+                `;
+                alert(`Error running model calculation: ${err.message}`);
             }
         });
     </script>
